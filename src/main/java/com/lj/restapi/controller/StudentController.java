@@ -18,7 +18,7 @@ public class StudentController {
     @Autowired
     StudentService studentService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getAllStudents",produces = MediaType.APPLICATION_JSON_VALUE)
     private ResponseEntity<List<Student>> getAllStudents(){
         try {
             List<Student> studentList = studentService.getAllStudents();
@@ -28,7 +28,7 @@ public class StudentController {
         }
     }
 
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/getStudentById/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     private ResponseEntity getStudentById(@PathVariable("id") Long id){
         try{
             return new ResponseEntity<>(studentService.getStudentById(id),HttpStatus.OK);
@@ -46,23 +46,34 @@ public class StudentController {
         }
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<String> saveStudent(@RequestBody Student student){
+    @PostMapping(value = "/saveStudent",produces = MediaType.APPLICATION_JSON_VALUE)
+    private ResponseEntity<Student> saveStudent(@RequestBody Student student){
         try{
             studentService.saveStudent(student);
         }catch (Exception exception){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("New Student created with id: " + student.getId(), HttpStatus.CREATED);
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity deleteById(@PathVariable("id") Long id) {
-        try {
-            studentService.delete(id);
-        } catch (Exception exception) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @PutMapping(value = "/modifyStudent/{id}")
+    public ResponseEntity<Student> modifyStudent(@PathVariable Long id, @RequestBody Student student){
+        try{
+            Student studentModified = studentService.modifyStudent(id,student);
+            return new ResponseEntity<>(studentModified, HttpStatus.OK);
+        }catch (StudentNotFoundException studentNotFoundException){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("Student deleted with id: " + id, HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping(value = "/deleteStudent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    private ResponseEntity<Student> deleteById(@PathVariable("id") Long id) {
+        Student studentToDelete;
+        try {
+            studentToDelete = studentService.delete(id);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(studentToDelete, HttpStatus.NO_CONTENT);
     }
 }

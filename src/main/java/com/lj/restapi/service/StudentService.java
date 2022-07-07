@@ -56,6 +56,8 @@ public class StudentService {
 
         setStudent(student,studentToEdit);
 
+        studentRepository.save(studentToEdit);
+
         return studentToEdit;
     }
 
@@ -67,8 +69,9 @@ public class StudentService {
         studentToSet.setCareer(student.getCareer());
     }
 
-    public void delete(Long id){
-        Student student = this.getStudentById(id);
-        studentRepository.deleteById(student.getId());
+    public Student delete(Long id){
+        Student studentToDelete = this.getStudentById(id);
+        studentRepository.deleteById(studentToDelete.getId());
+        return studentToDelete;
     }
 }
