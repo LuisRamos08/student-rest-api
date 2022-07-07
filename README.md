@@ -2,7 +2,8 @@
 
 REST-API desarrollada en Spring Boot.
 
-
+## La misma se conecta a la api publica externa:
+https://agify.io/ Esta, al pasarle un nombre, devuelve un JSON donde estima la edad.
 
 ## Se utilizó:
 
